@@ -9,8 +9,11 @@ import { PermissionsAndroid } from 'react-native';
 
 import Colors from '../constants/Colors'; 
 
+// Import the CameraScreen component
+import CameraScreen from './CameraScreen';
+
 // Request camera permission
-async function requestCameraPermission() {
+async function requestCameraPermission(navigation) {
   try {
     const granted = await PermissionsAndroid.request(
       PermissionsAndroid.PERMISSIONS.CAMERA,
@@ -19,13 +22,14 @@ async function requestCameraPermission() {
         message:
           "Take a picture of your food and an AI will " +
           "detect and save what is on your plate!",
-        /*buttonNeutral: "Ask Me Later",*/
         buttonNegative: "Cancel",
         buttonPositive: "OK"
       }
     );
     if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-      console.log("You can use the camera");
+      console.log("Camera permission granted");
+      // Navigate to CameraScreen when permission is granted
+      navigation.navigate('Camera');
     } else {
       console.log("Camera permission denied");
     }
@@ -52,31 +56,25 @@ const moreOptionsItems = [
 
 export default function BreakfastScreen({ navigation }) {
   const [checked, setChecked] = React.useState([]);
-  const [searchInput, setSearchInput] = React.useState(''); // Add this line
+  const [searchInput, setSearchInput] = React.useState('');
   const [currentDate, setCurrentDate] = useState('');
 
   const handleAddItem = () => {
     if (searchInput.trim() !== '') {
-      // Check if the item already exists in the breakfastItems or moreOptionsItems array
       const existingItem = breakfastItems.concat(moreOptionsItems).find(item => item.name.toLowerCase() === searchInput.toLowerCase());
-  
       if (existingItem) {
-        // If the item exists, just select it
         if (!checked.includes(existingItem.id)) {
           setChecked([...checked, existingItem.id]);
         }
       } else {
-        // If the item doesn't exist, add it to the moreOptionsItems array and select it
         const newItem = {
           id: moreOptionsItems.length + 1,
           name: searchInput,
           image: require('../assets/no_image.png'),
         };
-        //moreOptionsItems.push(newItem);
         moreOptionsItems.unshift(newItem);
         setChecked([...checked, newItem.id]);
       }
-  
       setSearchInput('');
     }
   };
@@ -85,7 +83,6 @@ export default function BreakfastScreen({ navigation }) {
     setCurrentDate(moment().format('MMMM Do YYYY'));
   }, []);
 
-  // Function to render each breakfast item
   const renderItem = ({ item }) => (
     <View style={styles.item}>
       <View style={styles.itemContent}>
@@ -118,7 +115,7 @@ export default function BreakfastScreen({ navigation }) {
           onChangeText={text => setSearchInput(text)}
           onSubmitEditing={handleAddItem}
         />
-        <TouchableOpacity onPress={requestCameraPermission} style={styles.cameraButton}>
+        <TouchableOpacity onPress={() => requestCameraPermission(navigation)} style={styles.cameraButton}>
           <Icon name="camera" size={30} color="#000" />
         </TouchableOpacity>
       </View>
@@ -151,16 +148,6 @@ const styles = StyleSheet.create({
     color: Colors.primary,
     marginBottom: 16,
     alignSelf: 'center',
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 10,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginLeft: 10,
   },
   searchBarContainer: {
     flexDirection: 'row', 

@@ -1,16 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { View, TouchableOpacity, Text, StyleSheet } from 'react-native';
+import { View, TouchableOpacity, Text, StyleSheet, Modal } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { NavigationContainer } from '@react-navigation/native';
 import data from '../bloating_data.json';
-
+import foodData from '../food_data.json';
 
 const Stack = createStackNavigator();
 
-
-export default function AnalyticsScreen() {
+export default function AnalyticsScreen2({ navigation }) {
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
+  const [selectedDay, setSelectedDay] = useState(null);
+  const [selectedDayData, setSelectedDayData] = useState(null);
+  const [selectedFoodData, setSelectedFoodData] = useState([]);
 
   useEffect(() => {
     const monthData = data.filter(item => {
@@ -18,7 +20,6 @@ export default function AnalyticsScreen() {
       return date.getMonth() === currentMonth && date.getFullYear() === currentYear;
     });
   }, [currentMonth, currentYear]);
-
 
   const handlePrevMonth = () => {
     if (currentMonth > 0) {
@@ -59,6 +60,20 @@ export default function AnalyticsScreen() {
     return '#FFFFFF';
   };
 
+  const handleDayClick = (day) => {
+    setSelectedDay(day);
+    const dayData = data.find(d => {
+      const dDate = new Date(d.date);
+      return dDate.getDate() === day && dDate.getMonth() === currentMonth && dDate.getFullYear() === currentYear;
+    });
+    setSelectedDayData(dayData);
+    const foodDayData = foodData.filter(d => {
+      const dDate = new Date(d.date);
+      return dDate.getDate() === day && dDate.getMonth() === currentMonth && dDate.getFullYear() === currentYear;
+    });
+    setSelectedFoodData(foodDayData);
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.buttonContainer}>
@@ -76,11 +91,40 @@ export default function AnalyticsScreen() {
           <Text key={index} style={styles.dayOfWeek}>{dayOfWeek}</Text>
         ))}
         {days.map((day, index) => (
-          <View key={index} style={[styles.day, { backgroundColor: day ? getDayColor(day) : 'transparent' }]}>
+          <TouchableOpacity key={index} style={[styles.day, { backgroundColor: day ? getDayColor(day) : 'transparent' }]} onPress={() => handleDayClick(day)}>
             {day && <Text style={styles.dayText}>{day}</Text>}
-          </View>
+          </TouchableOpacity>
         ))}
       </View>
+
+      {/* Popup or overlay */}
+      <Modal visible={selectedDay !== null} animationType="slide">
+        <View style={styles.popupContainer}>
+          {selectedDayData && (
+            <View style={styles.selectedDataContainer}>
+              <Text style={styles.selectedDate}>{`${selectedDayData.date}`}</Text>
+              <Text>{`Bloating Severity: ${selectedDayData.severity}`}</Text>
+              <Text>{`Hour: ${selectedDayData.hour}`}</Text>
+              <Text>{`Symptoms: ${selectedDayData.symptoms}`}</Text>
+            </View>
+          )}
+
+          {selectedFoodData.length > 0 && (
+            <View style={styles.foodDataContainer}>
+              <Text style={styles.foodTitle}>Food Intake</Text>
+              {selectedFoodData.map((food, index) => (
+                <View key={index} style={styles.foodItem}>
+                  <Text>{`${food.meal} (${food.hour}): ${food.food}`}</Text>
+                </View>
+              ))}
+            </View>
+          )}
+
+          <TouchableOpacity style={styles.closeButton} onPress={() => setSelectedDay(null)}>
+            <Text style={styles.closeButtonText}>Close</Text>
+          </TouchableOpacity>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -124,5 +168,44 @@ const styles = StyleSheet.create({
   },
   dayText: {
     color: '#000',
+  },
+  popupContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    backgroundColor: '#FFF',
+    paddingHorizontal: 20,
+    paddingVertical: 40,
+  },
+  selectedDataContainer: {
+    marginBottom: 30,
+  },
+  selectedDate: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  foodDataContainer: {
+    marginBottom: 20,
+  },
+  foodTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  foodItem: {
+    marginBottom: 5,
+  },
+  closeButton: {
+    position: 'absolute',
+    bottom: 20,
+    right: 20,
+    backgroundColor: '#F3F3F3',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 10,
+  },
+  closeButtonText: {
+    fontSize: 16,
+    color: '#333',
   },
 });

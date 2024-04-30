@@ -91,17 +91,13 @@ export default function HomeScreen() {
 
 const styles = StyleSheet.create({
   container: {
-    //flexDirection: 'row',
-    //flexWrap: 'wrap',
-    //justifyContent: 'space-between',
     flex: 1,
-    //alignItems: 'center',
     backgroundColor: Colors.white,
     padding: 16,
+    justifyContent: 'space-between', // Align the bloating button at the bottom
   },
   date: {
     fontSize: 16,
-    //fontWeight: 'semibold',
     color: Colors.primary,
     marginBottom: 16,
     alignSelf: 'center',
@@ -137,25 +133,23 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   bloatingButton: {
+    alignSelf: 'center', // Align the button in the center horizontally
     width: 100,
     height: 100,
     borderRadius: 50,
     backgroundColor: Colors.primary,
     alignItems: 'center',
     justifyContent: 'center',
-    marginVertical: 10,
   },
   bloatingText: {
     color: Colors.white,
     fontWeight: 'bold',
-    marginTop: -20,
-    fontSize: 12,
+    fontSize: 12, // Adjust as needed
   },
   bloatingImage: {
     width: 90,
-    height: 90,
+    height: 60,
     resizeMode: 'contain',
-    marginTop: -20,
   },
   bottomRow: {
     flexDirection: 'row',

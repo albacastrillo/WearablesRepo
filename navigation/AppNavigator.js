@@ -6,15 +6,20 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 
 import HomeScreen from '../screens/HomeScreen';
-import AnalyticsScreen from '../screens/AnalyticsScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import FoodAnalyticsScreen from '../screens/FoodAnalyticsScreen';
 
-import BreakfastScreen from '../screens/BreakfastScreen';
+import AnalyticsScreen from '../screens/AnalyticsScreen';
+import AnalyticsScreen2 from '../screens/AnalyticsScreen2';
+
 import BloatingScreen from '../screens/BloatingScreen';
+
+import BreakfastScreen from '../screens/BreakfastScreen';
+import BreakfastScreen2 from '../screens/BreakfastScreen2';
 
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Colors from '../constants/Colors';
+import CameraScreen from '../screens/CameraScreen';
 
 const Tab = createBottomTabNavigator();
 
@@ -24,8 +29,10 @@ function HomeStack() {
   return (
     <Stack.Navigator>
       <Stack.Screen name="Homescreen" component={HomeScreen} />
-      <Stack.Screen name="Breakfast" component={BreakfastScreen} />
+      <Stack.Screen name="Breakfast" component={BreakfastScreen2} />
       <Stack.Screen name="Bloating" component={BloatingScreen} />
+      <Stack.Screen name="Analytics" component={AnalyticsScreen2} />
+      <Stack.Screen name="Camera" component={CameraScreen} />
     </Stack.Navigator>
   );
 }
@@ -56,7 +63,7 @@ export default function AppNavigator() {
         }}
       >
         <Tab.Screen name="Home" component={HomeStack} />
-        <Tab.Screen name="Analytics" component={AnalyticsScreen} />
+        <Tab.Screen name="Analytics" component={AnalyticsScreen2} />
         <Tab.Screen name="Profile" component={ProfileScreen} />
         <Tab.Screen name="FoodAnalytics" component={FoodAnalyticsScreen} />
         

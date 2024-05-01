@@ -65,7 +65,6 @@ export default function AppNavigator() {
         <Tab.Screen name="Home" component={HomeStack} />
         <Tab.Screen name="Analytics" component={AnalyticsScreen2} />
         <Tab.Screen name="Profile" component={ProfileScreen} />
-        <Tab.Screen name="FoodAnalytics" component={FoodAnalyticsScreen} />
         
       </Tab.Navigator>
     </NavigationContainer>

@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { View, TouchableOpacity, Text, StyleSheet, Modal } from 'react-native';
+import { ScrollView, View, TouchableOpacity, Text, StyleSheet, Modal } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { NavigationContainer } from '@react-navigation/native';
 import data from '../bloating_data.json';
 import foodData from '../food_data.json';
+import moment from 'moment';
+
 
 const Stack = createStackNavigator();
 
@@ -13,13 +15,31 @@ export default function AnalyticsScreen2({ navigation }) {
   const [selectedDay, setSelectedDay] = useState(null);
   const [selectedDayData, setSelectedDayData] = useState(null);
   const [selectedFoodData, setSelectedFoodData] = useState([]);
+  const [bloatingMetric, setBloatingMetric] = useState(0); 
 
   useEffect(() => {
-    const monthData = data.filter(item => {
-      const date = new Date(item.date);
-      return date.getMonth() === currentMonth && date.getFullYear() === currentYear;
+    // Get the date 30 days ago
+    const thirtyDaysAgo = moment().subtract(30, 'days');
+  
+    // Filter the data for the last 30 days
+    const lastThirtyDaysData = data.filter(item => {
+      const date = moment(item.date);
+      return date.isSameOrAfter(thirtyDaysAgo);
     });
-  }, [currentMonth, currentYear]);
+  
+    // Extract unique dates affected by bloating
+    const uniqueDates = new Set();
+    lastThirtyDaysData.forEach(item => {
+      const date = moment(item.date).format('YYYY-MM-DD');
+      uniqueDates.add(date);
+    });
+  
+    // Calculate the number of unique days affected by bloating
+    const bloatingMetric = uniqueDates.size;
+    setBloatingMetric(bloatingMetric);
+
+
+}, [currentYear, currentMonth]);
 
   const handlePrevMonth = () => {
     if (currentMonth > 0) {
@@ -75,7 +95,7 @@ export default function AnalyticsScreen2({ navigation }) {
   };
 
   return (
-    <View style={styles.container}>
+    <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.buttonContainer}>
         <TouchableOpacity style={styles.button} onPress={handlePrevMonth}>
           <Text style={styles.arrow}>&lt;</Text>
@@ -125,7 +145,14 @@ export default function AnalyticsScreen2({ navigation }) {
           </TouchableOpacity>
         </View>
       </Modal>
-    </View>
+      <View style={styles.metricContainer}>
+        <Text style={styles.metricLabel}>Bloating Last 30 Days</Text>
+        <Text style={styles.metricValue}>{`${bloatingMetric}/30`}</Text>
+      </View>
+
+
+
+    </ScrollView>
   );
 }
 
@@ -135,6 +162,22 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 16,
+  },
+  metricContainer: {
+    backgroundColor: '#F0F0F0',
+    padding: 10,
+    alignItems: 'center',
+    borderRadius: 10,
+    marginTop: 20,
+  },
+  metricValue: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#FF5733',
+  },
+  metricLabel: {
+    fontSize: 16,
+    color: '#333',
   },
   buttonContainer: {
     flexDirection: 'row',

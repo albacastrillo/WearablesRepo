@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { ScrollView, View, TouchableOpacity, Text, StyleSheet, Modal } from 'react-native';
+import { ScrollView, View, TouchableOpacity, Text, StyleSheet, Modal, Image } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { NavigationContainer } from '@react-navigation/native';
 import data from '../bloating_data.json';
 import foodData from '../food_data.json';
 import moment from 'moment';
+import { BarChart, Bar, Brush, XAxis, YAxis, CartesianGrid } from "recharts";
 
 
 const Stack = createStackNavigator();
@@ -15,31 +16,33 @@ export default function AnalyticsScreen2({ navigation }) {
   const [selectedDay, setSelectedDay] = useState(null);
   const [selectedDayData, setSelectedDayData] = useState(null);
   const [selectedFoodData, setSelectedFoodData] = useState([]);
-  const [bloatingMetric, setBloatingMetric] = useState(0); 
+  const [bloatingMetric, setBloatingMetric] = useState(0);
+  const [worstFoodsData, setWorstFoodsData] = useState([]);
+  const [infoPopupVisible, setInfoPopupVisible] = useState(false);
 
   useEffect(() => {
     // Get the date 30 days ago
     const thirtyDaysAgo = moment().subtract(30, 'days');
-  
+
     // Filter the data for the last 30 days
     const lastThirtyDaysData = data.filter(item => {
       const date = moment(item.date);
       return date.isSameOrAfter(thirtyDaysAgo);
     });
-  
+
     // Extract unique dates affected by bloating
     const uniqueDates = new Set();
     lastThirtyDaysData.forEach(item => {
       const date = moment(item.date).format('YYYY-MM-DD');
       uniqueDates.add(date);
     });
-  
+
     // Calculate the number of unique days affected by bloating
     const bloatingMetric = uniqueDates.size;
     setBloatingMetric(bloatingMetric);
 
-
-}, [currentYear, currentMonth]);
+    WorstFoodsPodium();
+  }, [currentYear, currentMonth]);
 
   const handlePrevMonth = () => {
     if (currentMonth > 0) {
@@ -59,6 +62,14 @@ export default function AnalyticsScreen2({ navigation }) {
     }
   };
 
+  const handleInfoPress = () => {
+    setInfoPopupVisible(true);
+  };
+
+  const handleInfoPopupClose = () => {
+    setInfoPopupVisible(false);
+  };
+
   const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
   const firstDayOfWeek = new Date(currentYear, currentMonth, 1).getDay();
 
@@ -70,26 +81,65 @@ export default function AnalyticsScreen2({ navigation }) {
   const getDayColor = day => {
     const item = data.find(d => {
       const dDate = new Date(d.date);
-      return dDate.getDate() === day && dDate.getMonth() === currentMonth && dDate.getFullYear() === currentYear;
+      return (
+        dDate.getDate() === day &&
+        dDate.getMonth() === currentMonth &&
+        dDate.getFullYear() === currentYear
+      );
     });
     if (item) {
-      const green = Math.max(0, Math.floor(178 - item.severity * 20)).toString(16).padStart(2, '0');
-      const blue = Math.max(0, Math.floor(40 - item.severity * 5)).toString(16).padStart(2, '0');
+      const green = Math.max(0, Math.floor(178 - item.severity * 20))
+        .toString(16)
+        .padStart(2, '0');
+      const blue = Math.max(0, Math.floor(40 - item.severity * 5))
+        .toString(16)
+        .padStart(2, '0');
       return `#E0${green}${blue}`;
     }
     return '#FFFFFF';
   };
 
-  const handleDayClick = (day) => {
+  const WorstFoodsPodium = () => {
+    // Define worstFoodsData here
+    const worstFoodsData = [
+      { name: 'Fast Food', severity: '0' },
+      { name: 'Soda', severity: '1' },
+      { name: 'Processed Snacks', severity: '2' },
+    ];
+    setWorstFoodsData(worstFoodsData);
+  };
+
+  const getPodiumImage = index => {
+    switch (index) {
+      case 0:
+        return require('../assets/images/puke.png');
+      case 1:
+        return require('../assets/images/puke.png');
+      case 2:
+        return require('../assets/images/puke.png');
+      default:
+        return null;
+    }
+  };
+
+  const handleDayClick = day => {
     setSelectedDay(day);
     const dayData = data.find(d => {
       const dDate = new Date(d.date);
-      return dDate.getDate() === day && dDate.getMonth() === currentMonth && dDate.getFullYear() === currentYear;
+      return (
+        dDate.getDate() === day &&
+        dDate.getMonth() === currentMonth &&
+        dDate.getFullYear() === currentYear
+      );
     });
     setSelectedDayData(dayData);
     const foodDayData = foodData.filter(d => {
       const dDate = new Date(d.date);
-      return dDate.getDate() === day && dDate.getMonth() === currentMonth && dDate.getFullYear() === currentYear;
+      return (
+        dDate.getDate() === day &&
+        dDate.getMonth() === currentMonth &&
+        dDate.getFullYear() === currentYear
+      );
     });
     setSelectedFoodData(foodDayData);
   };
@@ -108,10 +158,18 @@ export default function AnalyticsScreen2({ navigation }) {
 
       <View style={styles.calendar}>
         {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((dayOfWeek, index) => (
-          <Text key={index} style={styles.dayOfWeek}>{dayOfWeek}</Text>
+          <Text key={index} style={styles.dayOfWeek}>
+            {dayOfWeek}
+          </Text>
         ))}
         {days.map((day, index) => (
-          <TouchableOpacity key={index} style={[styles.day, { backgroundColor: day ? getDayColor(day) : 'transparent' }]} onPress={() => handleDayClick(day)}>
+          <TouchableOpacity
+            key={index}
+            style={[
+              styles.day,
+              { backgroundColor: day ? getDayColor(day) : 'transparent' },
+            ]}
+            onPress={() => handleDayClick(day)}>
             {day && <Text style={styles.dayText}>{day}</Text>}
           </TouchableOpacity>
         ))}
@@ -145,13 +203,49 @@ export default function AnalyticsScreen2({ navigation }) {
           </TouchableOpacity>
         </View>
       </Modal>
+
       <View style={styles.metricContainer}>
         <Text style={styles.metricLabel}>Bloating Last 30 Days</Text>
         <Text style={styles.metricValue}>{`${bloatingMetric}/30`}</Text>
       </View>
-
-
-
+      <View style={styles.podiumContainer}>
+        <View style={styles.podiumTitleContainer}>
+          <Text style={styles.podiumTitle}>Top 3 Worst Foods</Text>
+          <TouchableOpacity onPress={handleInfoPress}>
+            <Image
+              source={require('../assets/images/info_icon.png')}
+              style={styles.infoIcon}
+            />
+          </TouchableOpacity>
+        </View>
+        <View style={styles.podiumItemsContainer}>
+          {worstFoodsData.map((food, index) => (
+            <View key={index} style={styles.podiumItem}>
+              <Image
+                source={getPodiumImage(index)}
+                style={styles.podiumImage}
+              />
+              <View style={styles.podiumTextContainer}>
+                <Text style={styles.podiumName}>{food.name}</Text>
+                <Text style={styles.podiumSeverity}>{`Severity: ${food.severity}`}</Text>
+              </View>
+            </View>
+          ))}
+        </View>
+      </View>
+      {/* Information Popup */}
+      {infoPopupVisible && (
+        <View style={styles.infoPopupContainer}>
+          <View style={styles.infoPopup}>
+            <Text style={styles.infoText}>
+              These select food items have been selected by an algorithm, based on their occurrences, severity and dispersion across different meals.
+            </Text>
+            <TouchableOpacity onPress={handleInfoPopupClose}>
+              <Text style={styles.closeInfoPopupButton}>Close</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      )}
     </ScrollView>
   );
 }
@@ -250,5 +344,82 @@ const styles = StyleSheet.create({
   closeButtonText: {
     fontSize: 16,
     color: '#333',
+  },
+  podiumContainer: {
+    backgroundColor: '#f0f0f0',
+    padding: 10,
+    borderRadius: 10,
+    marginTop: 20,
+    alignItems: 'center', 
+  },
+  podiumTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 10,
+    textAlign: 'center',
+  },
+  podiumItemsContainer: {
+    flexDirection: 'column', 
+    alignItems: 'center', 
+  },
+  podiumItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  podiumImage: {
+    width: 50,
+    height: 50,
+    marginRight: 10,
+  },
+  podiumTextContainer: {
+    flex: 1,
+  },
+  podiumName: {
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  podiumSeverity: {
+    color: 'red',
+  },
+  podiumTitleContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  podiumTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 10,
+    textAlign: 'center',
+  },
+  infoIcon: {
+    width: 15,
+    height: 15,
+    marginBottom: 20, // Adjust the value as needed to lift the icon higher than the title
+    marginLeft: 10,
+  },
+  infoPopupContainer: {
+    position: 'absolute',
+    top: '50%', 
+    left: '18%',
+    transform: [{ translateX: -50 }, { translateY: -50 }],
+    zIndex: 999, // Ensure it appears on top of other content
+  },
+  infoPopup: {
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    padding: 20,
+    elevation: 5,
+  },
+  infoText: {
+    fontSize: 16,
+    marginBottom: 20,
+  },
+  closeInfoPopupButton: {
+    fontSize: 16,
+    color: 'blue',
+    textDecorationLine: 'underline',
+    marginLeft: 'auto', // Pushes the button to the right
   },
 });

@@ -2,11 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { ScrollView, View, TouchableOpacity, Text, StyleSheet, Modal, Image } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { NavigationContainer } from '@react-navigation/native';
+import Chart from '../components/BrushBarChart.js'; // Assuming the component is in a file called BarChart.js
+
 import data from '../bloating_data.json';
 import foodData from '../food_data.json';
 import moment from 'moment';
-import { BarChart, Bar, Brush, XAxis, YAxis, CartesianGrid } from "recharts";
-
+import SearchFoodSeverity from "../components/SearchFood.js"
+import PieChartComponent from "../components/PieChart.js"
 
 const Stack = createStackNavigator();
 
@@ -19,6 +21,23 @@ export default function AnalyticsScreen2({ navigation }) {
   const [bloatingMetric, setBloatingMetric] = useState(0);
   const [worstFoodsData, setWorstFoodsData] = useState([]);
   const [infoPopupVisible, setInfoPopupVisible] = useState(false);
+
+  const foodAverageSeverity = {
+    "scrambled eggs": 8.2,
+    "toast": 7.5,
+    "grilled chicken": 7.5,
+    "Fast Food": 7.5,
+    "Cucumber": 7.0,
+    "Bananas": 6.5,
+    "Soda": 6.2,
+    "Beers": 6.0,
+    "Processed Snacks": 6.0,
+    "Hummus": 6.0,
+    "Ham": 5.8,
+    "Eggplant": 5.2,
+    "sushi rolls": 5.0,
+    "coffee": 1.0,
+  };
 
   useEffect(() => {
     // Get the date 30 days ago
@@ -102,9 +121,9 @@ export default function AnalyticsScreen2({ navigation }) {
   const WorstFoodsPodium = () => {
     // Define worstFoodsData here
     const worstFoodsData = [
-      { name: 'Fast Food', severity: '0' },
-      { name: 'Soda', severity: '1' },
-      { name: 'Processed Snacks', severity: '2' },
+      { name: 'Fast Food', severity: '7.5' },
+      { name: 'Soda', severity: '6.2' },
+      { name: 'Processed Snacks', severity: '6.0' },
     ];
     setWorstFoodsData(worstFoodsData);
   };
@@ -205,7 +224,7 @@ export default function AnalyticsScreen2({ navigation }) {
       </Modal>
 
       <View style={styles.metricContainer}>
-        <Text style={styles.metricLabel}>Bloating Last 30 Days</Text>
+        <Text style={styles.podiumTitle}>Bloating Last 30 Days</Text>
         <Text style={styles.metricValue}>{`${bloatingMetric}/30`}</Text>
       </View>
       <View style={styles.podiumContainer}>
@@ -227,12 +246,28 @@ export default function AnalyticsScreen2({ navigation }) {
               />
               <View style={styles.podiumTextContainer}>
                 <Text style={styles.podiumName}>{food.name}</Text>
-                <Text style={styles.podiumSeverity}>{`Severity: ${food.severity}`}</Text>
+                <Text style={styles.podiumSeverity}>{`Average Severity: ${food.severity}`}</Text>
               </View>
             </View>
           ))}
         </View>
       </View>
+      <Text style={styles.podiumTitle}>All Foods and Average Severity</Text>
+      <ScrollView horizontal={true} nestedScrollEnabled={true}>
+      {/*
+      <View>
+        <SearchFoodSeverity foodAverageSeverity={foodAverageSeverity}/>
+      </View>
+      */}
+            <Chart foodAverageSeverity={foodAverageSeverity} />
+      </ScrollView>
+
+      <View style={styles.metricContainer}>
+      <Text style={styles.podiumTitle}>Symptoms Across All Time</Text>
+
+        <PieChartComponent bloatingData={data}/>
+      </View>
+      
       {/* Information Popup */}
       {infoPopupVisible && (
         <View style={styles.infoPopupContainer}>
@@ -246,17 +281,29 @@ export default function AnalyticsScreen2({ navigation }) {
           </View>
         </View>
       )}
+
+      
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flexGrow: 1,
     justifyContent: 'center',
     alignItems: 'center',
     padding: 16,
   },
+  brushChartContainer: {
+    marginTop: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  chartContainer: {
+    marginTop: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+},
   metricContainer: {
     backgroundColor: '#F0F0F0',
     padding: 10,
@@ -401,7 +448,7 @@ const styles = StyleSheet.create({
   },
   infoPopupContainer: {
     position: 'absolute',
-    top: '50%', 
+    top: '30%', 
     left: '18%',
     transform: [{ translateX: -50 }, { translateY: -50 }],
     zIndex: 999, // Ensure it appears on top of other content

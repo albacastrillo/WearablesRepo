@@ -16,6 +16,9 @@ const PieChartComponent = ({ bloatingData }) => {
     });
   });
 
+  // Sort symptoms based on occurrences
+  const sortedSymptoms = Object.keys(symptoms).sort((a, b) => symptoms[b] - symptoms[a]);
+
   // Define a custom color scheme
   const colorScheme = [
     '#FF5733', '#FFC300', '#DAF7A6', '#C70039', '#900C3F',
@@ -23,8 +26,8 @@ const PieChartComponent = ({ bloatingData }) => {
     '#33FFC7', '#FF33E0', '#33FFFA', '#CC33FF', '#FF3366'
   ];
 
-  // Prepare data for the pie chart
-  const data = Object.keys(symptoms).map((symptom, index) => ({
+  // Prepare data for the pie chart with sorted symptoms and assigned colors
+  const data = sortedSymptoms.map((symptom, index) => ({
     name: symptom,
     count: symptoms[symptom],
     color: colorScheme[index % colorScheme.length] // Use modulo to repeat colors if needed

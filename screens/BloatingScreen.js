@@ -1,22 +1,24 @@
 // BloatingScreen.js
 
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity, Image, FlatList, Keyboard } from 'react-native';
+import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity, Image, FlatList, Keyboard, Platform } from 'react-native';
 import moment from 'moment';
 import Slider from '@react-native-community/slider';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import DateTimePicker from '@react-native-community/datetimepicker';
+
 
 import Colors from '../constants/Colors';
 
 const symptoms = [
-  { name: 'Belching', image: require('../assets/images/belching.png') },
-  { name: 'Diarrhea', image: require('../assets/images/diarrhea.png') },
-  { name: 'Farting', image: require('../assets/images/farting.png') },
-  { name: 'Gassy', image: require('../assets/images/gassy.png') },
-  { name: 'Heartburn', image: require('../assets/images/heartburn.png') },
-  { name: 'Heaviness', image: require('../assets/images/heaviness.png') },
-  { name: 'Pain', image: require('../assets/images/pain.png') },
-  { name: 'Puking', image: require('../assets/images/puke.png') },
+  { name: 'Swelling', image: require('../assets/symptoms/swelling.png') },
+  { name: 'Gassy', image: require('../assets/symptoms/gassy.png') },
+  { name: 'Constipation', image: require('../assets/symptoms/Constipation.png') },
+  { name: 'Pain', image: require('../assets/symptoms/pain.png') },
+  { name: 'Belching', image: require('../assets/symptoms/belching.png') },
+  { name: 'Nausea', image: require('../assets/symptoms/nausea.png') },
+  { name: 'Diarrhea', image: require('../assets/symptoms/diarrhea.png') },
+  { name: 'Headache', image: require('../assets/symptoms/headache.png') },
   // Add more symptoms...
 ];
 
@@ -26,14 +28,19 @@ export default function BloatingScreen({ navigation }) {
   const [selectedSymptoms, setSelectedSymptoms] = useState([]);
   const [customSymptoms, setCustomSymptoms] = useState([]);
 
+  const [date, setDate] = useState(new Date());
+  const [mode, setMode] = useState('date');
+  const [show, setShow] = useState(false);
+
   const handleSave = () => {
     setSelectedSymptoms([]);
     setSeverity(5);
     setCustomSymptoms([]);
     setCustomSymptom('');
     alert('Your symptoms have been logged.');
-  };
 
+    navigation.goBack();
+  };
   const handleSymptomPress = (symptom) => {
     setSelectedSymptoms(prev => {
       if (prev.includes(symptom)) {
@@ -84,6 +91,21 @@ export default function BloatingScreen({ navigation }) {
     }
   };
   
+  const onChange = (event, selectedDate) => {
+    const currentDate = selectedDate || date;
+    setShow(Platform.OS === 'ios');
+    setDate(currentDate);
+  };
+
+  const showMode = (currentMode) => {
+    setShow(true);
+    setMode(currentMode);
+  };
+
+  const showTimepicker = () => {
+    showMode('time');
+  };
+
 
   return (
     <View style={styles.container}>
@@ -132,6 +154,7 @@ export default function BloatingScreen({ navigation }) {
       <Text style={styles.sectionTitle}>How severe is your bloating?</Text>
       <Text>Severity: {severity}</Text>
       <Slider
+        style={{marginHorizontal: -16}}
         value={severity}
         onValueChange={setSeverity}
         minimumValue={1}
@@ -141,13 +164,32 @@ export default function BloatingScreen({ navigation }) {
         maximumTrackTintColor={Colors.gray}
         thumbTintColor={Colors.primary}
       />
-      <View style={styles.container}>
-      <TouchableOpacity style={styles.button} onPress={handleSave}>
-              <Text style={styles.saveButtonText}>Save</Text>
-      </TouchableOpacity>
+
+      <View>
+        <Text style={styles.sectionTitle}>What time were you bloated?</Text>
+        <TouchableOpacity style={styles.buttonTime} onPress={showTimepicker}>
+          <Text style={styles.buttonTimeText}>{date.toLocaleTimeString()}</Text>
+        </TouchableOpacity>
       </View>
+      {show && (
+        <DateTimePicker
+          testID="dateTimePicker"
+          value={date}
+          mode={mode}
+          is24Hour={true}
+          display="default"
+          onChange={onChange}
+          color={Colors.primary}
+        />
+      )}
+
+      <View style={styles.container}>
+        <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
+          <Text style={styles.saveButtonText}>Save</Text>
+        </TouchableOpacity>
+      </View>
+
     </View>
-    
   );
 };
 
@@ -188,14 +230,15 @@ const styles = StyleSheet.create({
     margin: 3.5, 
   },
   buttonText: {
-    fontSize: 10,
+    fontSize: 9.5,
     fontWeight: 'bold',
     color: Colors.primary,
     textAlign: 'center',
   },
   image: {
-    width: 50,
-    height: 50,
+    width: 65,
+    height: 65,
+    resizeMode: 'contain',
     marginBottom: 10,
   },
   input: {
@@ -238,15 +281,19 @@ const styles = StyleSheet.create({
   },
   saveButton: {
     position: 'absolute',
-    bottom: 20,
-    width: '100%',
-    alignItems: 'center',
+    right: 10,
+    bottom: 10,
+    backgroundColor: Colors.primary,
+    borderRadius: 10,
+    padding: 10,
+    paddingLeft: 20, // Add more padding to the left
+    paddingRight: 20, 
   },
   saveButtonText: {
-    fontSize: 18,
+    color: 'white',
     fontWeight: 'bold',
-    color: Colors.primary,
-    alignItems: 'center',
-
+  },
+  buttonTimeText: {
+    color: 'black',
   },
 });

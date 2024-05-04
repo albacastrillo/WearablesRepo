@@ -71,7 +71,6 @@ export default function BreakfastScreen({ navigation }) {
         if (searchInput.toLowerCase() === 'banana') {
           image = require('../assets/images/banana.jpeg');
         } else {
-          //console.log("Input: ", searchInput);
           image = require('../assets/no_image.png');
         }
 
@@ -133,7 +132,8 @@ export default function BreakfastScreen({ navigation }) {
 
   
   const handleSave = () => {
-    // Add any save logic here
+    alert('Your breakfast has been logged.');
+
     navigation.goBack();
   };
 

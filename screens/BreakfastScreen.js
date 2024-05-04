@@ -128,6 +128,7 @@ export default function BreakfastScreen({ navigation }) {
         data={breakfastItems}
         renderItem={renderItem}
         keyExtractor={item => item.id.toString()}
+        style={{backgroundColor: Colors.primaryLight, marginBottom:1}}
       />
 
       <Text style={styles.sectionTitle}>Recently eaten</Text>

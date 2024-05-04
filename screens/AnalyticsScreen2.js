@@ -205,7 +205,7 @@ export default function AnalyticsScreen2({ navigation }) {
         <View style={styles.popupContainer}>
           {selectedDayData && (
             <View style={styles.selectedDataContainer}>
-              <Text style={styles.selectedDate}>{`${selectedDayData.date}`}</Text>
+              <Text style={styles.SectionTitle}>{`${selectedDayData.date}`}</Text>
               <Text>{`Bloating Severity: ${selectedDayData.severity}`}</Text>
               <Text>{`Hour: ${selectedDayData.hour}`}</Text>
               <Text>{`Symptoms: ${selectedDayData.symptoms}`}</Text>
@@ -214,7 +214,7 @@ export default function AnalyticsScreen2({ navigation }) {
 
           {selectedFoodData.length > 0 && (
             <View style={styles.foodDataContainer}>
-              <Text style={styles.foodTitle}>Food Intake</Text>
+              <Text style={styles.SectionTitle}>Food Intake</Text>
               {selectedFoodData.map((food, index) => (
                 <View key={index} style={styles.foodItem}>
                   <Text>{`${food.meal} (${food.hour}): ${food.food}`}</Text>
@@ -392,16 +392,17 @@ const styles = StyleSheet.create({
   },
   closeButton: {
     position: 'absolute',
-    bottom: 20,
-    right: 20,
-    backgroundColor: '#F3F3F3',
-    paddingVertical: 10,
-    paddingHorizontal: 20,
+    right: 10,
+    bottom: 10,
+    backgroundColor: Colors.primary,
     borderRadius: 10,
+    padding: 10,
+    paddingLeft: 20, // Add more padding to the left
+    paddingRight: 20, 
   },
   closeButtonText: {
-    fontSize: 16,
-    color: Colors.primary,
+    color: 'white',
+    fontWeight: 'bold',
   },
   SectionTitle: {
     fontSize: 18,

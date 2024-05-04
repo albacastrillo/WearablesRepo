@@ -47,40 +47,42 @@ export default function HomeScreen() {
         </TouchableOpacity>
       </View>
 
-      <TouchableOpacity style={styles.bloatingButton} onPress={handleBloatingPress}>
-        <Image source={require('../assets/images/Logo.png')} style={styles.bloatingImage} />
-        <Text style={styles.bloatingText}>Bloating</Text>
-      </TouchableOpacity>
+      <View style={styles.outerCircle}>
+        <TouchableOpacity style={styles.bloatingButton} onPress={handleBloatingPress}>
+          <Text style={styles.bloatingText}>Bloating</Text>
+          <Image source={require('../assets/images/Logo.png')} style={styles.bloatingImage} />
+        </TouchableOpacity>
+      </View>
 
-      <View style={styles.bottomRow}>
+      <View style={styles.bottomRow1}>
         <TouchableOpacity style={styles.bottomBox}>
           <Image source={require('../assets/images/water.webp')} style={styles.bottomImage} />
           <View style={styles.bottomTextBox}>
-            <Text style={styles.boxText}>Water intake</Text>
+            <Text style={styles.bottomText1}>Water intake</Text>
             <Text style={styles.bottomText2}>1,5 L</Text>
           </View>
         </TouchableOpacity>
         <TouchableOpacity style={styles.bottomBox}>
           <Image source={require('../assets/images/toilet.png')} style={styles.bottomImage} />
           <View style={styles.bottomTextBox}>
-            <Text style={styles.boxText}>Toilet visits</Text>
+            <Text style={styles.bottomText1}>Toilet visits</Text>
             <Text style={styles.bottomText2}>4</Text>
           </View>
         </TouchableOpacity>
       </View>
 
-      <View style={styles.bottomRow}>
+      <View style={styles.bottomRow2}>
         <TouchableOpacity style={styles.bottomBox}>
           <Image source={require('../assets/images/walking.png')} style={styles.bottomImage} />
           <View style={styles.bottomTextBox}>
-            <Text style={styles.boxText}>Steps</Text>
+            <Text style={styles.bottomText1}>Steps</Text>
             <Text style={styles.bottomText2}>10.342</Text>
           </View>
         </TouchableOpacity>
         <TouchableOpacity style={styles.bottomBox}>
           <Image source={require('../assets/images/running.png')} style={styles.bottomImage} />
           <View style={styles.bottomTextBox}>
-            <Text style={styles.boxText}>Exercise</Text>
+            <Text style={styles.bottomText1}>Exercise</Text>
             <Text style={styles.bottomText2}>3 km</Text>
           </View>
         </TouchableOpacity>
@@ -99,15 +101,14 @@ const styles = StyleSheet.create({
   date: {
     fontSize: 16,
     color: Colors.primary,
-    marginBottom: 16,
     alignSelf: 'center',
+    marginBottom: 8,
   },
   gridContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
-    //alignItems: 'center',
-    marginBottom: 20,
+    marginBottom: 8,
   },
   box: {
     width: '23%',
@@ -116,7 +117,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     alignItems: 'center',
     justifyContent: 'center',
-    marginVertical: 10,
+    //marginVertical: 10,
   },
   boxText: {
     fontSize: 10,
@@ -130,13 +131,25 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
     borderRadius: 10,
     marginVertical: 5,
-    marginTop: 10,
+    marginTop: 16,
   },
+  outerCircle: {
+    alignSelf: 'center',
+    width: 155, // Adjust as needed, should be larger than bloatingButton
+    height: 155, // Adjust as needed, should be larger than bloatingButton
+    borderRadius: 100, // Half of width and height
+    backgroundColor: 'transparent', // No background color
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1.5, // Adjust as needed for border thickness
+    borderColor: Colors.primaryLight, // Adjust as needed for border color
+    marginBottom: 8,
+},
   bloatingButton: {
     alignSelf: 'center', // Align the button in the center horizontally
-    width: 100,
-    height: 100,
-    borderRadius: 50,
+    width: 140,
+    height: 140,
+    borderRadius: 100,
     backgroundColor: Colors.primary,
     alignItems: 'center',
     justifyContent: 'center',
@@ -144,17 +157,23 @@ const styles = StyleSheet.create({
   bloatingText: {
     color: Colors.white,
     fontWeight: 'bold',
-    fontSize: 12, // Adjust as needed
+    fontSize: 18,
+    position: 'absolute', // Position the text absolutely within the button
+    top: 30, // Adjust as needed to move the text up
   },
   bloatingImage: {
     width: 90,
-    height: 60,
+    marginTop: 40,
     resizeMode: 'contain',
   },
-  bottomRow: {
+  bottomRow1: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 10,
+  },
+  bottomRow2: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 70,
   },
   bottomBox: {
     width: '48.5%', 
@@ -165,11 +184,17 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     flexDirection: 'row',
   },
+  bottomText1: {
+    fontSize: 10,
+    fontWeight: 'bold',
+    color: Colors.primary,
+    marginTop: 8,
+    marginBottom: 2,
+  },
   bottomText2: {
-    fontSize: 16,
-    //fontWeight: 'bold',
+    fontSize: 18,
     color: Colors.black,
-    marginBottom: 10,
+    marginBottom: 20,
   },
   bottomImage: {
     width: '60%',
@@ -178,10 +203,12 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginVertical: 5,
     marginTop: 10,
+    marginLeft: -20,
   },
   bottomTextBox: {
-    marginLeft: 0,
-    alignItems: 'flex-start',
+    marginLeft: -5,
+    marginTop: 15,
+    alignItems: 'center',
     justifyContent: 'center',
     flexDirection: 'column',
   },

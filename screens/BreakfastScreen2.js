@@ -47,10 +47,10 @@ const breakfastItems = [
 ];
 
 const moreOptionsItems = [
-  //{ id: 1, name: 'Tea', image: require('../assets/images/tea.png') },
+  { id: 1, name: 'Tea', image: require('../assets/images/tea.png') },
   { id: 2, name: 'Pastry', image: require('../assets/images/croissant.jpg') },
   { id: 3, name: 'Strawberries', image: require('../assets/images/strawberries.jpg') },
-  { id: 4, name: 'Bananas', image: require('../assets/images/banana.jpeg') },
+  //{ id: 4, name: 'Bananas', image: require('../assets/images/banana.jpeg') },
   // Add more breakfast items here
 ];
 
@@ -67,10 +67,18 @@ export default function BreakfastScreen({ navigation }) {
           setChecked([...checked, existingItem.id]);
         }
       } else {
+        let image;
+        if (searchInput.toLowerCase() === 'banana') {
+          image = require('../assets/images/banana.jpeg');
+        } else {
+          //console.log("Input: ", searchInput);
+          image = require('../assets/no_image.png');
+        }
+
         const newItem = {
           id: moreOptionsItems.length + 1,
           name: searchInput,
-          image: require('../assets/no_image.png'),
+          image: image,
         };
         moreOptionsItems.unshift(newItem);
         setChecked([...checked, newItem.id]);

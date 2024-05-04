@@ -139,11 +139,11 @@ export default function AnalyticsScreen2({ navigation }) {
   const getPodiumImage = index => {
     switch (index) {
       case 0:
-        return require('../assets/images/puke.png');
+        return require('../assets/symptoms/swelling.png');
       case 1:
-        return require('../assets/images/puke.png');
+        return require('../assets/symptoms/swelling.png');
       case 2:
-        return require('../assets/images/puke.png');
+        return require('../assets/symptoms/swelling.png');
       default:
         return null;
     }

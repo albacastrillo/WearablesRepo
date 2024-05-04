@@ -70,7 +70,7 @@ export default function BreakfastScreen({ navigation }) {
         const newItem = {
           id: moreOptionsItems.length + 1,
           name: searchInput,
-          image: require('../assets/no_image.png'),
+          image: require('../assets/images/no_image.png'),
         };
         //moreOptionsItems.push(newItem);
         moreOptionsItems.unshift(newItem);

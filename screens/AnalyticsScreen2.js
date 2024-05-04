@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { ScrollView, View, TouchableOpacity, Text, StyleSheet, Modal, Image } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
+import Icon from 'react-native-vector-icons/FontAwesome';
 import { NavigationContainer } from '@react-navigation/native';
 import Chart from '../components/BrushBarChart.js'; // Assuming the component is in a file called BarChart.js
 
@@ -9,6 +10,7 @@ import foodData from '../food_data.json';
 import moment from 'moment';
 import SearchFoodSeverity from "../components/SearchFood.js"
 import PieChartComponent from "../components/PieChart.js"
+import Colors from '../constants/Colors.js';
 
 const Stack = createStackNavigator();
 
@@ -107,13 +109,16 @@ export default function AnalyticsScreen2({ navigation }) {
       );
     });
     if (item) {
-      const green = Math.max(0, Math.floor(178 - item.severity * 20))
+      const red = Math.max(0, Math.floor(255 - item.severity * 10)) // Decrease red component
         .toString(16)
         .padStart(2, '0');
-      const blue = Math.max(0, Math.floor(40 - item.severity * 5))
+      const green = Math.max(0, Math.floor(220 - item.severity * 10))
         .toString(16)
         .padStart(2, '0');
-      return `#E0${green}${blue}`;
+      const blue = Math.max(0, Math.floor(95 - item.severity * 5))
+        .toString(16)
+        .padStart(2, '0');
+      return `#${red}${green}${blue}`;
     }
     return '#FFFFFF';
   };
@@ -121,9 +126,9 @@ export default function AnalyticsScreen2({ navigation }) {
   const WorstFoodsPodium = () => {
     // Define worstFoodsData here
     const worstFoodsData = [
-      { name: 'Fast Food', severity: '7.5' },
-      { name: 'Soda', severity: '6.2' },
-      { name: 'Processed Snacks', severity: '6.0' },
+      { name: 'French fries', severity: '7.5' },
+      { name: 'Cake', severity: '6.2' },
+      { name: 'Broccoli', severity: '6.0' },
     ];
     setWorstFoodsData(worstFoodsData);
   };
@@ -131,11 +136,11 @@ export default function AnalyticsScreen2({ navigation }) {
   const getPodiumImage = index => {
     switch (index) {
       case 0:
-        return require('../assets/images/puke.png');
+        return require('../assets/images/french_fries.jpg');
       case 1:
-        return require('../assets/images/puke.png');
+        return require('../assets/images/cake.webp');
       case 2:
-        return require('../assets/images/puke.png');
+        return require('../assets/images/brocoli.webp');
       default:
         return null;
     }
@@ -166,17 +171,19 @@ export default function AnalyticsScreen2({ navigation }) {
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.button} onPress={handlePrevMonth}>
+        <TouchableOpacity style={styles.buttonarrow} onPress={handlePrevMonth}>
           <Text style={styles.arrow}>&lt;</Text>
         </TouchableOpacity>
-        <Text style={styles.yearText}>{`${currentMonth + 1}/${currentYear}`}</Text>
-        <TouchableOpacity style={styles.button} onPress={handleNextMonth}>
+        <Icon name="calendar-o" size={20} color={Colors.primary} />
+        <View style={{ width: 10 }} />
+        <Text style={styles.yearText}>{`${new Date(currentYear, currentMonth).toLocaleString('en-US', { month: 'long' })} ${currentYear}`}</Text>
+        <TouchableOpacity style={styles.buttonarrow} onPress={handleNextMonth}>
           <Text style={styles.arrow}>&gt;</Text>
         </TouchableOpacity>
       </View>
 
       <View style={styles.calendar}>
-        {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((dayOfWeek, index) => (
+        {['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'].map((dayOfWeek, index) => (
           <Text key={index} style={styles.dayOfWeek}>
             {dayOfWeek}
           </Text>
@@ -186,7 +193,7 @@ export default function AnalyticsScreen2({ navigation }) {
             key={index}
             style={[
               styles.day,
-              { backgroundColor: day ? getDayColor(day) : 'transparent' },
+              { backgroundColor: day ? getDayColor(day) : 'transparent', borderColor: 'white', borderWidth: 0.5 },
             ]}
             onPress={() => handleDayClick(day)}>
             {day && <Text style={styles.dayText}>{day}</Text>}
@@ -224,21 +231,22 @@ export default function AnalyticsScreen2({ navigation }) {
       </Modal>
 
       <View style={styles.metricContainer}>
-        <Text style={styles.podiumTitle}>Bloating Last 30 Days</Text>
+        <Text style={styles.metricTitle}>Bloating in the last 30 days</Text>
         <Text style={styles.metricValue}>{`${bloatingMetric}/30`}</Text>
       </View>
-      <View style={styles.podiumContainer}>
-        <View style={styles.podiumTitleContainer}>
-          <Text style={styles.podiumTitle}>Top 3 Worst Foods</Text>
-          <TouchableOpacity onPress={handleInfoPress}>
-            <Image
-              source={require('../assets/images/info_icon.png')}
-              style={styles.infoIcon}
-            />
-          </TouchableOpacity>
-        </View>
-        <View style={styles.podiumItemsContainer}>
-          {worstFoodsData.map((food, index) => (
+
+
+      <View style={styles.podiumTitleContainer}>
+        <Text style={styles.podiumTitle}>Top 3 Worst Foods</Text>
+        <View style={{ width: 10 }} />
+        <TouchableOpacity onPress={handleInfoPress}>
+          <Icon name="info-circle" size={20} color={Colors.primary} />
+        </TouchableOpacity>
+      </View>
+        
+      <View style={styles.podiumItemsContainer}>
+        {worstFoodsData.map((food, index) => (
+          <View key={index} style={styles.podiumItemBox}>
             <View key={index} style={styles.podiumItem}>
               <Image
                 source={getPodiumImage(index)}
@@ -246,12 +254,14 @@ export default function AnalyticsScreen2({ navigation }) {
               />
               <View style={styles.podiumTextContainer}>
                 <Text style={styles.podiumName}>{food.name}</Text>
-                <Text style={styles.podiumSeverity}>{`Average Severity: ${food.severity}`}</Text>
+                <Text style={styles.podiumSeverity}>{`Avg Severity`}</Text>
+                <Text style={styles.podiumSeverity2}>{`${food.severity}`}</Text>
               </View>
             </View>
-          ))}
-        </View>
+          </View>
+        ))}
       </View>
+
       <Text style={styles.podiumTitle}>All Foods and Average Severity</Text>
       <ScrollView horizontal={true} nestedScrollEnabled={true}>
       {/*
@@ -273,7 +283,7 @@ export default function AnalyticsScreen2({ navigation }) {
         <View style={styles.infoPopupContainer}>
           <View style={styles.infoPopup}>
             <Text style={styles.infoText}>
-              These select food items have been selected by an algorithm, based on their occurrences, severity and dispersion across different meals.
+              These food items have been selected by an algorithm, based on their occurrences, severity and dispersion across different meals.
             </Text>
             <TouchableOpacity onPress={handleInfoPopupClose}>
               <Text style={styles.closeInfoPopupButton}>Close</Text>
@@ -290,8 +300,8 @@ export default function AnalyticsScreen2({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: 'flex-start',
+    //alignItems: 'flex-start',
     padding: 16,
   },
   brushChartContainer: {
@@ -305,35 +315,40 @@ const styles = StyleSheet.create({
     alignItems: 'center',
 },
   metricContainer: {
-    backgroundColor: '#F0F0F0',
+    backgroundColor: Colors.primary,
     padding: 10,
     alignItems: 'center',
-    borderRadius: 10,
+    width: '100%',
+    borderRadius: 20,
     marginTop: 20,
+    marginBottom: 20,
   },
   metricValue: {
-    fontSize: 24,
+    fontSize: 26,
     fontWeight: 'bold',
-    color: '#FF5733',
+    color: Colors.white,
   },
-  metricLabel: {
+  metricTitle: {
     fontSize: 16,
-    color: '#333',
+    color: Colors.white,
   },
   buttonContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 20,
   },
-  button: {
+  buttonarrow: {
     padding: 10,
   },
   arrow: {
     fontSize: 20,
+    color: Colors.primary,
+    fontWeight: 'bold',
   },
   yearText: {
     fontSize: 20,
+    color: Colors.primary,
+    fontWeight: 'bold',
   },
   calendar: {
     flexDirection: 'row',
@@ -343,6 +358,7 @@ const styles = StyleSheet.create({
   dayOfWeek: {
     width: '14%',
     textAlign: 'center',
+    fontWeight: 'bold',
   },
   day: {
     width: '14%',
@@ -390,37 +406,40 @@ const styles = StyleSheet.create({
   },
   closeButtonText: {
     fontSize: 16,
-    color: '#333',
-  },
-  podiumContainer: {
-    backgroundColor: '#f0f0f0',
-    padding: 10,
-    borderRadius: 10,
-    marginTop: 20,
-    alignItems: 'center', 
+    color: Colors.primary,
   },
   podiumTitle: {
     fontSize: 18,
+    color: Colors.primary,
     fontWeight: 'bold',
-    marginBottom: 10,
-    textAlign: 'center',
+    marginBottom: 5,
   },
   podiumItemsContainer: {
-    flexDirection: 'column', 
+    flexDirection: 'row', 
+    justifyContent: 'space-between',
     alignItems: 'center', 
   },
+  podiumItemBox: {
+    flex: 1,
+    backgroundColor: Colors.grayLight,
+    borderRadius: 10,
+    padding: 8,
+    margin: 3,
+    marginBottom:20,
+  },
   podiumItem: {
-    flexDirection: 'row',
+    flexDirection: 'column',
     alignItems: 'center',
-    marginBottom: 10,
   },
   podiumImage: {
-    width: 50,
-    height: 50,
-    marginRight: 10,
+    width: 60,
+    height: 60,
+    borderRadius: 10,
+    marginBottom: 5,
   },
   podiumTextContainer: {
     flex: 1,
+    alignItems: 'center',
   },
   podiumName: {
     fontSize: 16,
@@ -429,22 +448,14 @@ const styles = StyleSheet.create({
   podiumSeverity: {
     color: 'red',
   },
+  podiumSeverity2: {
+    color: 'red',
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
   podiumTitleContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
-  },
-  podiumTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 10,
-    textAlign: 'center',
-  },
-  infoIcon: {
-    width: 15,
-    height: 15,
-    marginBottom: 20, // Adjust the value as needed to lift the icon higher than the title
-    marginLeft: 10,
   },
   infoPopupContainer: {
     position: 'absolute',

@@ -71,7 +71,7 @@ export default function BreakfastScreen({ navigation }) {
         if (searchInput.toLowerCase() === 'banana') {
           image = require('../assets/images/banana.jpeg');
         } else {
-          image = require('../assets/no_image.png');
+          image = require('../assets/images/no_image.png');
         }
 
         const newItem = {

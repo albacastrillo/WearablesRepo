@@ -2,6 +2,8 @@ import React from 'react';
 import { BarChart } from 'react-native-chart-kit';
 import { View, Text } from 'react-native';
 
+import Colors from '../constants/Colors';
+
 const Chart = ({ foodAverageSeverity }) => {
   // Extract food names and average severities
   const foodNames = Object.keys(foodAverageSeverity);
@@ -21,28 +23,25 @@ const Chart = ({ foodAverageSeverity }) => {
     <View>
       <BarChart
         data={data}
-        width={foodNames.length * 100} // Adjust the width according to the number of items
-        height={350}
-        yAxisSuffix=""
-        yAxisInterval={1}
+        width={foodNames.length * 67} // Adjust the width according to the number of items
+        height={230}
+        fromZero={true}
         chartConfig={{
-          backgroundColor: '#ffffff',
-          backgroundGradientFrom: '#ffffff',
-          backgroundGradientTo: '#ffffff',
+          backgroundColor: Colors.white,
+          backgroundGradientFrom: Colors.white,
+          backgroundGradientTo: Colors.white,
+          fillShadowGradientFromOpacity: 0.7,
+          fillShadowGradientToOpacity: 0.3,
           decimalPlaces: 0,
-          color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+          color: (opacity = 0.1) => `rgba(243, 155,	119, ${opacity})`,
           labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-          style: {
-            borderRadius: 16
-          },
-          // Adjust paddingBottom to increase space underneath bars for x-axis labels
         }}
         style={{
-          marginVertical: 8,
+          marginVertical: 16,
           borderRadius: 16
         }}
         // Rotation for x-axis labels
-        verticalLabelRotation={20}
+        verticalLabelRotation={15}
       />
     </View>
   );

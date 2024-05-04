@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text } from 'react-native';
 import { PieChart } from 'react-native-chart-kit';
+import Colors from '../constants/Colors';
 
 const PieChartComponent = ({ bloatingData }) => {
   // Extract symptoms and their occurrences from the data
@@ -20,10 +21,11 @@ const PieChartComponent = ({ bloatingData }) => {
   const sortedSymptoms = Object.keys(symptoms).sort((a, b) => symptoms[b] - symptoms[a]);
 
   // Define a custom color scheme
+
+
   const colorScheme = [
-    '#FF5733', '#FFC300', '#DAF7A6', '#C70039', '#900C3F',
-    '#581845', '#3366FF', '#33FFBD', '#E033FF', '#FF3366',
-    '#33FFC7', '#FF33E0', '#33FFFA', '#CC33FF', '#FF3366'
+    Colors.primaryLight, Colors.primary, Colors.secondary, Colors.secondaryLight, '#DA6F82',
+    Colors.primaryDark, Colors.secondaryDark,'#96689D'
   ];
 
   // Prepare data for the pie chart with sorted symptoms and assigned colors
@@ -48,7 +50,7 @@ const PieChartComponent = ({ bloatingData }) => {
         }}
         accessor="count"
         backgroundColor="transparent"
-        paddingLeft="15"
+        paddingLeft="40"
         absolute
       />
     </View>

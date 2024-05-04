@@ -25,20 +25,19 @@ export default function AnalyticsScreen2({ navigation }) {
   const [infoPopupVisible, setInfoPopupVisible] = useState(false);
 
   const foodAverageSeverity = {
-    "scrambled eggs": 8.2,
-    "toast": 7.5,
-    "grilled chicken": 7.5,
-    "Fast Food": 7.5,
+    "French fries": 9.1,
+    "Cake": 8.8,
+    "Broccoli": 8.2,
+    "Eggs": 8.0,
+    "Toast": 7.5,
+    "Chicken": 7.5,
     "Cucumber": 7.0,
     "Bananas": 6.5,
-    "Soda": 6.2,
-    "Beers": 6.0,
-    "Processed Snacks": 6.0,
+    "Beer": 6.0,
     "Hummus": 6.0,
     "Ham": 5.8,
     "Eggplant": 5.2,
-    "sushi rolls": 5.0,
-    "coffee": 1.0,
+    "Sushi": 5.0,
   };
 
   useEffect(() => {
@@ -109,13 +108,13 @@ export default function AnalyticsScreen2({ navigation }) {
       );
     });
     if (item) {
-      const red = Math.max(0, Math.floor(255 - item.severity * 10)) // Decrease red component
+      const red = Math.max(0, Math.floor(255 - item.severity * 8))
         .toString(16)
         .padStart(2, '0');
-      const green = Math.max(0, Math.floor(220 - item.severity * 10))
+      const green = Math.max(0, Math.floor(220 - item.severity * 8))
         .toString(16)
         .padStart(2, '0');
-      const blue = Math.max(0, Math.floor(95 - item.severity * 5))
+      const blue = Math.max(0, Math.floor(100 - item.severity * 8))
         .toString(16)
         .padStart(2, '0');
       return `#${red}${green}${blue}`;
@@ -126,9 +125,9 @@ export default function AnalyticsScreen2({ navigation }) {
   const WorstFoodsPodium = () => {
     // Define worstFoodsData here
     const worstFoodsData = [
-      { name: 'French fries', severity: '7.5' },
-      { name: 'Cake', severity: '6.2' },
-      { name: 'Broccoli', severity: '6.0' },
+      { name: 'French fries', severity: '9.1' },
+      { name: 'Cake', severity: '8.8' },
+      { name: 'Broccoli', severity: '8.2' },
     ];
     setWorstFoodsData(worstFoodsData);
   };
@@ -193,7 +192,7 @@ export default function AnalyticsScreen2({ navigation }) {
             key={index}
             style={[
               styles.day,
-              { backgroundColor: day ? getDayColor(day) : 'transparent', borderColor: 'white', borderWidth: 0.5 },
+              { backgroundColor: day ? getDayColor(day) : 'transparent', borderColor: '#f0f0f0', borderWidth: 0.5 },
             ]}
             onPress={() => handleDayClick(day)}>
             {day && <Text style={styles.dayText}>{day}</Text>}
@@ -235,9 +234,8 @@ export default function AnalyticsScreen2({ navigation }) {
         <Text style={styles.metricValue}>{`${bloatingMetric}/30`}</Text>
       </View>
 
-
       <View style={styles.podiumTitleContainer}>
-        <Text style={styles.podiumTitle}>Top 3 Worst Foods</Text>
+        <Text style={styles.SectionTitle}>Top 3 Worst Foods</Text>
         <View style={{ width: 10 }} />
         <TouchableOpacity onPress={handleInfoPress}>
           <Icon name="info-circle" size={20} color={Colors.primary} />
@@ -262,21 +260,18 @@ export default function AnalyticsScreen2({ navigation }) {
         ))}
       </View>
 
-      <Text style={styles.podiumTitle}>All Foods and Average Severity</Text>
+      <Text style={styles.SectionTitle}>All Foods and Average Severity</Text>
       <ScrollView horizontal={true} nestedScrollEnabled={true}>
       {/*
       <View>
         <SearchFoodSeverity foodAverageSeverity={foodAverageSeverity}/>
       </View>
       */}
-            <Chart foodAverageSeverity={foodAverageSeverity} />
+        <Chart foodAverageSeverity={foodAverageSeverity} />
       </ScrollView>
 
-      <View style={styles.metricContainer}>
-      <Text style={styles.podiumTitle}>Symptoms Across All Time</Text>
-
-        <PieChartComponent bloatingData={data}/>
-      </View>
+      <Text style={styles.SectionTitle}>Symptoms Across All Time</Text>
+      <PieChartComponent bloatingData={data}/>
       
       {/* Information Popup */}
       {infoPopupVisible && (
@@ -301,8 +296,8 @@ const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
     justifyContent: 'flex-start',
-    //alignItems: 'flex-start',
     padding: 16,
+    backgroundColor: Colors.white,
   },
   brushChartContainer: {
     marginTop: 20,
@@ -408,7 +403,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: Colors.primary,
   },
-  podiumTitle: {
+  SectionTitle: {
     fontSize: 18,
     color: Colors.primary,
     fontWeight: 'bold',
@@ -424,6 +419,8 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.grayLight,
     borderRadius: 10,
     padding: 8,
+    paddingBottom: 16,
+    paddingTop: 16,
     margin: 3,
     marginBottom:20,
   },

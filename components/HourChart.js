@@ -15,7 +15,6 @@ export default function HourChart({ data }) {
 
     return (
         <View>
-            <Text style={{ fontSize: 12, textAlign: 'center', margin: 10 }}>Occurrences by Hours</Text>
             <BarChart
                 data={chartData}
                 width={labels.length * 20} // Adjust the width according to the number of items

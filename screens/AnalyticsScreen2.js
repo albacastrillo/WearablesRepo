@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { ScrollView, View, TouchableOpacity, Text, StyleSheet, Modal, Image } from 'react-native';
+import { ScrollView, View, TouchableOpacity, Text, StyleSheet, Modal, Button, Image } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { NavigationContainer } from '@react-navigation/native';
 import Chart from '../components/BrushBarChart.js'; // Assuming the component is in a file called BarChart.js
+import MonthChart from '../components/MonthChart';
+import DayChart from '../components/DayChart';
+import HourChart from '../components/HourChart';
 
 import data from '../bloating_data.json';
 import foodData from '../food_data.json';
@@ -23,149 +26,182 @@ export default function AnalyticsScreen2({ navigation }) {
   const [bloatingMetric, setBloatingMetric] = useState(0);
   const [worstFoodsData, setWorstFoodsData] = useState([]);
   const [infoPopupVisible, setInfoPopupVisible] = useState(false);
+  const [filteredData, setFilteredData] = useState([]);
+  const [chartType, setChartType] = useState('month');
 
   const foodAverageSeverity = {
-    "French fries": 9.1,
-    "Cake": 8.8,
-    "Broccoli": 8.2,
-    "Eggs": 8.0,
-    "Toast": 7.5,
-    "Chicken": 7.5,
-    "Cucumber": 7.0,
-    "Bananas": 6.5,
-    "Beer": 6.0,
-    "Hummus": 6.0,
-    "Ham": 5.8,
-    "Eggplant": 5.2,
-    "Sushi": 5.0,
+      "French fries": 9.1,
+      "Cake": 8.8,
+      "Broccoli": 8.2,
+      "Eggs": 8.0,
+      "Toast": 7.5,
+      "Chicken": 7.5,
+      "Cucumber": 7.0,
+      "Bananas": 6.5,
+      "Beer": 6.0,
+      "Hummus": 6.0,
+      "Ham": 5.8,
+      "Eggplant": 5.2,
+      "Sushi": 5.0,
   };
 
   useEffect(() => {
-    // Get the date 30 days ago
-    const thirtyDaysAgo = moment().subtract(30, 'days');
+      // Get the date 30 days ago
+      const thirtyDaysAgo = moment().subtract(30, 'days');
 
-    // Filter the data for the last 30 days
-    const lastThirtyDaysData = data.filter(item => {
-      const date = moment(item.date);
-      return date.isSameOrAfter(thirtyDaysAgo);
-    });
+      // Filter the data for the last 30 days
+      const lastThirtyDaysData = data.filter(item => {
+          const date = moment(item.date);
+          return date.isSameOrAfter(thirtyDaysAgo);
+      });
 
-    // Extract unique dates affected by bloating
-    const uniqueDates = new Set();
-    lastThirtyDaysData.forEach(item => {
-      const date = moment(item.date).format('YYYY-MM-DD');
-      uniqueDates.add(date);
-    });
+      // Extract unique dates affected by bloating
+      const uniqueDates = new Set();
+      lastThirtyDaysData.forEach(item => {
+          const date = moment(item.date).format('YYYY-MM-DD');
+          uniqueDates.add(date);
+      });
 
-    // Calculate the number of unique days affected by bloating
-    const bloatingMetric = uniqueDates.size;
-    setBloatingMetric(bloatingMetric);
+      // Calculate the number of unique days affected by bloating
+      const bloatingMetric = uniqueDates.size;
+      setBloatingMetric(bloatingMetric);
 
-    WorstFoodsPodium();
+      WorstFoodsPodium();
+
+      const selectedMonth = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}`;
+        const newFilteredData = data.filter(item => item.date.startsWith(selectedMonth));
+        setFilteredData(newFilteredData);
+
   }, [currentYear, currentMonth]);
 
   const handlePrevMonth = () => {
-    if (currentMonth > 0) {
-      setCurrentMonth(currentMonth - 1);
-    } else {
-      setCurrentMonth(11);
-      setCurrentYear(currentYear - 1);
-    }
+      if (currentMonth > 0) {
+          setCurrentMonth(currentMonth - 1);
+      } else {
+          setCurrentMonth(11);
+          setCurrentYear(currentYear - 1);
+      }
   };
 
   const handleNextMonth = () => {
-    if (currentMonth < 11) {
-      setCurrentMonth(currentMonth + 1);
-    } else {
-      setCurrentMonth(0);
-      setCurrentYear(currentYear + 1);
-    }
+      if (currentMonth < 11) {
+          setCurrentMonth(currentMonth + 1);
+      } else {
+          setCurrentMonth(0);
+          setCurrentYear(currentYear + 1);
+      }
   };
 
   const handleInfoPress = () => {
-    setInfoPopupVisible(true);
+      setInfoPopupVisible(true);
   };
 
   const handleInfoPopupClose = () => {
-    setInfoPopupVisible(false);
+      setInfoPopupVisible(false);
   };
 
   const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
   const firstDayOfWeek = new Date(currentYear, currentMonth, 1).getDay();
 
   const days = Array.from({ length: daysInMonth + firstDayOfWeek }, (_, i) => {
-    const day = i - firstDayOfWeek + 1;
-    return day > 0 ? day : null;
+      const day = i - firstDayOfWeek + 1;
+      return day > 0 ? day : null;
   });
 
   const getDayColor = day => {
-    const item = data.find(d => {
-      const dDate = new Date(d.date);
-      return (
-        dDate.getDate() === day &&
-        dDate.getMonth() === currentMonth &&
-        dDate.getFullYear() === currentYear
-      );
-    });
-    if (item) {
-      const red = Math.max(0, Math.floor(255 - item.severity * 8))
-        .toString(16)
-        .padStart(2, '0');
-      const green = Math.max(0, Math.floor(220 - item.severity * 8))
-        .toString(16)
-        .padStart(2, '0');
-      const blue = Math.max(0, Math.floor(100 - item.severity * 8))
-        .toString(16)
-        .padStart(2, '0');
-      return `#${red}${green}${blue}`;
-    }
-    return '#FFFFFF';
+      const item = data.find(d => {
+          const dDate = new Date(d.date);
+          return (
+              dDate.getDate() === day &&
+              dDate.getMonth() === currentMonth &&
+              dDate.getFullYear() === currentYear
+          );
+      });
+      if (item) {
+          const red = Math.max(0, Math.floor(255 - item.severity * 8))
+              .toString(16)
+              .padStart(2, '0');
+          const green = Math.max(0, Math.floor(220 - item.severity * 8))
+              .toString(16)
+              .padStart(2, '0');
+          const blue = Math.max(0, Math.floor(100 - item.severity * 8))
+              .toString(16)
+              .padStart(2, '0');
+          return `#${red}${green}${blue}`;
+      }
+      return '#FFFFFF';
   };
 
   const WorstFoodsPodium = () => {
-    // Define worstFoodsData here
-    const worstFoodsData = [
-      { name: 'French fries', severity: '9.1' },
-      { name: 'Cake', severity: '8.8' },
-      { name: 'Broccoli', severity: '8.2' },
-    ];
-    setWorstFoodsData(worstFoodsData);
+      // Define worstFoodsData here
+      const worstFoodsData = [
+          { name: 'French fries', severity: '9.1' },
+          { name: 'Cake', severity: '8.8' },
+          { name: 'Broccoli', severity: '8.2' },
+      ];
+      setWorstFoodsData(worstFoodsData);
   };
 
   const getPodiumImage = index => {
-    switch (index) {
-      case 0:
-        return require('../assets/images/french_fries.jpg');
-      case 1:
-        return require('../assets/images/cake.webp');
-      case 2:
-        return require('../assets/images/brocoli.webp');
-      default:
-        return null;
-    }
+      switch (index) {
+          case 0:
+              return require('../assets/images/french_fries.jpg');
+          case 1:
+              return require('../assets/images/cake.webp');
+          case 2:
+              return require('../assets/images/brocoli.webp');
+          default:
+              return null;
+      }
   };
 
   const handleDayClick = day => {
-    setSelectedDay(day);
-    const dayData = data.find(d => {
-      const dDate = new Date(d.date);
-      return (
-        dDate.getDate() === day &&
-        dDate.getMonth() === currentMonth &&
-        dDate.getFullYear() === currentYear
-      );
-    });
-    setSelectedDayData(dayData);
-    const foodDayData = foodData.filter(d => {
-      const dDate = new Date(d.date);
-      return (
-        dDate.getDate() === day &&
-        dDate.getMonth() === currentMonth &&
-        dDate.getFullYear() === currentYear
-      );
-    });
-    setSelectedFoodData(foodDayData);
+      setSelectedDay(day);
+      const dayData = data.find(d => {
+          const dDate = new Date(d.date);
+          return (
+              dDate.getDate() === day &&
+              dDate.getMonth() === currentMonth &&
+              dDate.getFullYear() === currentYear
+          );
+      });
+      setSelectedDayData(dayData);
+      const foodDayData = foodData.filter(d => {
+          const dDate = new Date(d.date);
+          return (
+              dDate.getDate() === day &&
+              dDate.getMonth() === currentMonth &&
+              dDate.getFullYear() === currentYear
+          );
+      });
+      setSelectedFoodData(foodDayData);
   };
+
+  // Prepare an empty object for each chart
+  const occurrencesPerMonth = {};
+  const occurrencesPerDay = {};
+  const occurrencesPerHour = {};
+
+  // Process each item in the data
+  data.forEach(item => {
+      const date = new Date(item.date);
+      const hour = parseInt(item.hour.split(':')[0]);
+
+      // Update the occurrences per month
+      const month = date.getMonth();
+      occurrencesPerMonth[month] = (occurrencesPerMonth[month] || 0) + 1;
+
+      // Update the occurrences per day of the week
+      const day = date.getDay();
+      occurrencesPerDay[day] = (occurrencesPerDay[day] || 0) + 1;
+
+      // Update the occurrences per hour
+      occurrencesPerHour[hour] = (occurrencesPerHour[hour] || 0) + 1;
+  });
+
+  console.log(occurrencesPerMonth);
+  console.log(occurrencesPerDay);
+  console.log(occurrencesPerHour);
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -270,8 +306,8 @@ export default function AnalyticsScreen2({ navigation }) {
         <Chart foodAverageSeverity={foodAverageSeverity} />
       </ScrollView>
 
-      <Text style={styles.SectionTitle}>Symptoms Across All Time</Text>
-      <PieChartComponent bloatingData={data}/>
+      <Text style={styles.SectionTitle}>Symptoms in {new Date(currentYear, currentMonth).toLocaleString('en-US', { month: 'long' })}</Text>
+      <PieChartComponent bloatingData={filteredData}/>
       
       {/* Information Popup */}
       {infoPopupVisible && (
@@ -287,7 +323,32 @@ export default function AnalyticsScreen2({ navigation }) {
         </View>
       )}
 
-      
+      <Text style={styles.SectionTitle}>Occurrences</Text>
+      <View style={{ flexDirection: 'row', justifyContent: 'space-around', margin: 10 }}>
+          <TouchableOpacity 
+              style={chartType === 'month' ? styles.buttonActive : styles.button} 
+              onPress={() => setChartType('month')}
+          >
+              <Text style={styles.buttonText}>Month</Text>
+          </TouchableOpacity>
+          <TouchableOpacity 
+              style={chartType === 'day' ? styles.buttonActive : styles.button} 
+              onPress={() => setChartType('day')}
+          >
+              <Text style={styles.buttonText}>Day</Text>
+          </TouchableOpacity>
+          <TouchableOpacity 
+              style={chartType === 'hour' ? styles.buttonActive : styles.button} 
+              onPress={() => setChartType('hour')}
+          >
+              <Text style={styles.buttonText}>Hour</Text>
+          </TouchableOpacity>
+      </View>
+
+      {chartType === 'month' && <MonthChart data={occurrencesPerMonth} />}
+      {chartType === 'day' && <DayChart data={occurrencesPerDay} />}
+      {chartType === 'hour' && <HourChart data={occurrencesPerHour} />}
+            
     </ScrollView>
   );
 }
@@ -478,4 +539,18 @@ const styles = StyleSheet.create({
     textDecorationLine: 'underline',
     marginLeft: 'auto', // Pushes the button to the right
   },
+    button: {
+        padding: 10,
+        backgroundColor: '#DDDDDD',
+        borderRadius: 5,
+    },
+    buttonActive: {
+        padding: 10,
+        backgroundColor: '#AAAAAA',
+        borderRadius: 5,
+    },
+    buttonText: {
+        fontSize: 16,
+        color: '#000',
+    },
 });

@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, CameraRoll } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, CameraRoll, Alert } from 'react-native';
 import { Camera } from 'expo-camera';
 import * as MediaLibrary from 'expo-media-library';
 import Colors from '../constants/Colors';
@@ -18,8 +18,14 @@ export default function CameraScreen({ navigation }) {
   const savePicture = async (uri) => {
     try {
       await MediaLibrary.saveToLibraryAsync(uri);
-      alert("AI Has detected a Banana.                " + 
-      "Picture saved to gallery.");
+      Alert.alert(
+        "Item detected!",
+        "AI has detected a banana.",
+        [
+          { text: "Save", onPress: () => console.log("Save Pressed") }
+        ],
+        { cancelable: false }
+      );
     } catch (error) {
       console.error('Error saving picture:', error);
     }

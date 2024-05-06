@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, CameraRoll } from 'react-native';
 import { Camera } from 'expo-camera';
 import * as MediaLibrary from 'expo-media-library';
+import Colors from '../constants/Colors';
 
 export default function CameraScreen({ navigation }) {
   const cameraRef = useRef(null);
@@ -69,19 +70,23 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     flexDirection: 'row',
-    justifyContent: 'center',
+    justifyContent: 'space-around',
     alignItems: 'center',
     marginBottom: 20,
+    marginTop: 20,
   },
   button: {
     marginHorizontal: 20,
-    backgroundColor: 'rgba(255, 255, 255, 0.7)',
     paddingHorizontal: 20,
     paddingVertical: 10,
-    borderRadius: 5,
+    backgroundColor: Colors.primary,
+    borderRadius: 10,
+    flex: 0.45,
   },
   buttonText: {
     fontSize: 16,
+    color: 'white',
     fontWeight: 'bold',
+    textAlign: 'center',
   },
 });

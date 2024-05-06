@@ -50,7 +50,7 @@ const PieChartComponent = ({ bloatingData }) => {
         }}
         accessor="count"
         backgroundColor="transparent"
-        paddingLeft="40"
+        paddingLeft="15"
         absolute
       />
     </View>

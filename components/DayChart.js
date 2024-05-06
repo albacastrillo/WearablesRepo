@@ -5,7 +5,7 @@ import Colors from '../constants/Colors';
 import { View, Dimensions } from 'react-native';
 
 export default function DayChart({ data }) {
-    const labels = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    const labels = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
     const dataset = labels.map((_, index) => data[index] || 0);
 
     const chartData = {
@@ -28,8 +28,9 @@ export default function DayChart({ data }) {
                     backgroundGradientTo: Colors.white,
                     fillShadowGradientFromOpacity: 0.7,
                     fillShadowGradientToOpacity: 0.3,
+                    barPercentage: 0.5,
                     decimalPlaces: 0,
-                    color: (opacity = 0.1) => `rgba(243, 155,	119, ${opacity})`,
+                    color: (opacity = 0.1) => `rgba(135, 153, 97, ${opacity})`,
                     labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
                 }}
                 style={{
@@ -38,6 +39,7 @@ export default function DayChart({ data }) {
                 }}
                 // Rotation for x-axis labels
                 verticalLabelRotation={15}
+                paddingLeft={15}
             />
         </View>
     );

@@ -297,7 +297,7 @@ export default function AnalyticsScreen2({ navigation }) {
       </View>
 
       <Text style={styles.SectionTitle}>All Foods and Average Severity</Text>
-      <ScrollView horizontal={true} nestedScrollEnabled={true}>
+      <ScrollView horizontal={true} nestedScrollEnabled={true} style={styles.barchartFood}>
       {/*
       <View>
         <SearchFoodSeverity foodAverageSeverity={foodAverageSeverity}/>
@@ -307,7 +307,9 @@ export default function AnalyticsScreen2({ navigation }) {
       </ScrollView>
 
       <Text style={styles.SectionTitle}>Symptoms in {new Date(currentYear, currentMonth).toLocaleString('en-US', { month: 'long' })}</Text>
-      <PieChartComponent bloatingData={filteredData}/>
+      <View style={styles.pieChartContainer}>
+        <PieChartComponent bloatingData={filteredData}/>
+      </View>
       
       {/* Information Popup */}
       {infoPopupVisible && (
@@ -324,31 +326,31 @@ export default function AnalyticsScreen2({ navigation }) {
       )}
 
       <Text style={styles.SectionTitle}>Occurrences</Text>
-      <View style={{ flexDirection: 'row', justifyContent: 'space-around', margin: 10 }}>
-          <TouchableOpacity 
-              style={chartType === 'month' ? styles.buttonActive : styles.button} 
-              onPress={() => setChartType('month')}
-          >
-              <Text style={styles.buttonText}>Month</Text>
-          </TouchableOpacity>
-          <TouchableOpacity 
-              style={chartType === 'day' ? styles.buttonActive : styles.button} 
-              onPress={() => setChartType('day')}
-          >
-              <Text style={styles.buttonText}>Day</Text>
-          </TouchableOpacity>
-          <TouchableOpacity 
-              style={chartType === 'hour' ? styles.buttonActive : styles.button} 
-              onPress={() => setChartType('hour')}
-          >
-              <Text style={styles.buttonText}>Hour</Text>
-          </TouchableOpacity>
-      </View>
-
-      {chartType === 'month' && <MonthChart data={occurrencesPerMonth} />}
-      {chartType === 'day' && <DayChart data={occurrencesPerDay} />}
-      {chartType === 'hour' && <HourChart data={occurrencesPerHour} />}
-            
+      <View style={styles.buttonContainer2}>
+        <TouchableOpacity 
+            style={chartType === 'month' ? styles.buttonActive : styles.button} 
+            onPress={() => setChartType('month')}
+        >
+            <Text style={chartType === 'month' ? styles.buttonTextActive : styles.buttonText}>Month</Text>
+        </TouchableOpacity>
+        <TouchableOpacity 
+            style={chartType === 'day' ? styles.buttonActive : styles.button} 
+            onPress={() => setChartType('day')}
+        >
+            <Text style={chartType === 'day' ? styles.buttonTextActive : styles.buttonText}>Day</Text>
+        </TouchableOpacity>
+        <TouchableOpacity 
+            style={chartType === 'hour' ? styles.buttonActive : styles.button} 
+            onPress={() => setChartType('hour')}
+        >
+            <Text style={chartType === 'hour' ? styles.buttonTextActive : styles.buttonText}>Hour</Text>
+        </TouchableOpacity>
+    </View>
+      <ScrollView horizontal={true} nestedScrollEnabled={true} style={styles.barchartFood}>
+        {chartType === 'month' && <MonthChart data={occurrencesPerMonth} />}
+        {chartType === 'day' && <DayChart data={occurrencesPerDay} />}
+        {chartType === 'hour' && <HourChart data={occurrencesPerHour} />}
+      </ScrollView> 
     </ScrollView>
   );
 }
@@ -365,19 +367,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  chartContainer: {
-    marginTop: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
-},
   metricContainer: {
     backgroundColor: Colors.primary,
     padding: 10,
     alignItems: 'center',
     width: '100%',
     borderRadius: 20,
-    marginTop: 20,
-    marginBottom: 20,
+    marginTop: 30,
+    marginBottom: 30,
   },
   metricValue: {
     fontSize: 26,
@@ -475,6 +472,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row', 
     justifyContent: 'space-between',
     alignItems: 'center', 
+    marginBottom: 10,
   },
   podiumItemBox: {
     flex: 1,
@@ -539,18 +537,46 @@ const styles = StyleSheet.create({
     textDecorationLine: 'underline',
     marginLeft: 'auto', // Pushes the button to the right
   },
-    button: {
-        padding: 10,
-        backgroundColor: '#DDDDDD',
-        borderRadius: 5,
-    },
-    buttonActive: {
-        padding: 10,
-        backgroundColor: '#AAAAAA',
-        borderRadius: 5,
-    },
-    buttonText: {
-        fontSize: 16,
-        color: '#000',
-    },
+  buttonContainer2: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    borderWidth: 1,
+    borderColor: Colors.primaryLight,
+    borderRadius: 10,
+    overflow: 'hidden',
+    marginTop: 10,
+  },
+  button: {
+    padding: 8,
+    borderRadius: 10,
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  buttonActive: {
+    padding: 8,
+    backgroundColor: Colors.primary,
+    borderRadius: 10,
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  buttonText: {
+    fontSize: 16,
+    color: Colors.black,
+  },
+  buttonTextActive: {
+    fontSize: 16,
+    color: Colors.white,
+    fontWeight: 'bold',
+  },
+  pieChartContainer: {
+    marginBottom: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  barchartFood: {
+    marginBottom: 8,
+    marginLeft: -30,
+  },
 });
